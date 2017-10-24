@@ -8,9 +8,12 @@ class GoodController extends ControllerBase
 {
 	public function sampleAction()
 	{
+		$data = Users::findFirst(1);
+
 		$data = [
 			'code' => '200',
-			'msg' => 'ok'
+			'msg' => 'ok',
+			'data' => $data
 		];
 		response($data, 'json');
 	}
