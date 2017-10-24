@@ -1,0 +1,55 @@
+<?php
+/**
+ * Author: Jason
+ */
+return [
+    'debug'    => true,
+
+    'cache'    => [
+        'driver'    => 'redis',
+        'file'      => [
+            'dir' => ROOT . '/storage/framework/cache/',
+        ],
+        'memcached' => [
+            [
+                'host'   => '127.0.0.1',
+                'port'   => '11211',
+                'weight' => '100',
+            ],
+        ],
+        'redis'     => [
+            'host'       => 'localhost',
+            'port'       => 6379,
+            // 'auth'       => 'foobared',
+            'persistent' => false,
+        ],
+    ],
+
+    'database' => [
+        'db'       => [
+            'host'     => '127.0.0.1',
+            'username' => 'root',
+            'password' => 'root123',
+            'dbname'   => 'lightning',
+            'prefix'   => '',
+            'charset'  => 'utf8',
+        ],
+        'db_slave' => [
+            'host'     => '127.0.0.1',
+            'username' => 'root',
+            'password' => 'root123',
+            'dbname'   => 'lightning',
+            'prefix'   => '',
+            'charset'  => 'utf8',
+        ],
+    ],
+
+    'log'      => [
+        'path'  => ROOT . '/storage/logs/',
+        'period' => 'daily',
+        'level' => 'debug',
+    ],
+    'queue' => [
+        'driver' => 'redis',
+    ]
+];
