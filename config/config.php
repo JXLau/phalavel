@@ -9,6 +9,7 @@ return [
 
     'cache'    => [
         'driver'    => 'redis',
+        'lifetime' => 86400,
         'file'      => [
             'dir' => ROOT . '/storage/framework/cache/',
         ],
@@ -16,7 +17,7 @@ return [
             [
                 'host'   => '127.0.0.1',
                 'port'   => '11211',
-                'weight' => '100',
+                'weight' => '100'
             ],
         ],
         'redis'     => [

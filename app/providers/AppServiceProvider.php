@@ -41,20 +41,20 @@ class AppServiceProvider extends ServiceProvider
             switch ($config->driver) {
                 case 'memcached':
                     $cache = new BackMemCached(
-                        new FrontData(["lifetime" => 7 * 24 * 3600]),
+                        new FrontData(["lifetime" => $config->lifetime]),
                         ["servers" => $config->memcached->toArray()]
                     );
                     break;
                 case 'file':
                     $cache = new BackFile(
-                        new FrontOutput(["lifetime" => 6 * 3600]),
+                        new FrontOutput(["lifetime" => $config->lifetime]),
                         ['cacheDir' => $config->file->dir]
                     );
                     break;
                 case 'redis':
                     //使用redis
                     $cache = new BackRedis(
-                        new FrontData(["lifetime" => 7 * 24 * 3600]),
+                        new FrontData(["lifetime" => $config->lifetime]),
                         $config->redis->toArray()
                     );
                     break;
