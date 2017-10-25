@@ -83,21 +83,22 @@ class AppServiceProvider extends ServiceProvider
     protected function registerQueue()
     {
         $config = $this->config;
+        if ($config->offsetExists('queue')) {
+            if ($config->queue->driver == 'redis') {
+                $this->di->setShared('redis', function() use ($config) {
+                    $redis = new Predis(
+                        $config->cache->redis->toArray()
+                    );
 
-        if ($config->queue->driver == 'redis') {
-            $this->di->setShared('redis', function() use ($config) {
-                $redis = new Predis(
-                    $config->cache->redis->toArray()
-                );
+                    return $redis;
+                });
+            }
 
-                return $redis;
-            });
+            $this->di->set('queue', function () use ($config) {
+                $queueManager = new QueueManager($config);
+                return $queueManager->getQueue();
+            });   
         }
-
-        $this->di->set('queue', function () use ($config) {
-            $queueManager = new QueueManager($config);
-            return $queueManager->getQueue();
-        });
     }
 
     protected function redisterModelsCache()
