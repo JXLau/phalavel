@@ -14,36 +14,52 @@ use Phalcon\Di;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Di\FactoryDefault\Cli;
 use Phalcon\Logger\Adapter\File as FileAdapter;
-use Phalcon\Mvc\Url as UrlResolver;
 
 class Application
 {
     /**
-     * The Lightning framework version.
-     *
-     * @var string
+     * Phalavel version
      */
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
 
     /**
      * @var \Phalcon\DiInterface
      */
     protected $di;
+    /**
+     * @var \Phalcon\Config
+     */
     protected $config;
-
+    /**
+     * @var \Phalcon\Loader
+     */
     protected $loader;
+
+    protected $factory;
 
     public function __construct(\Phalcon\Loader $loader)
     {
+        $config_files = glob(CONFIG_PATH . DIRECTORY_SEPARATOR . '*.php');
+        $config = [];
+        foreach ($config_files as $config_file) {
+            $each_config = require $config_file;
+            $config = array_merge($each_config, $config);
+        }
+
         $this->config = new Config(array_replace_recursive(
-            require CONFIG_PATH . '/config.php',
-            require ROOT . '/_'
+            $config,
+            require ROOT . DIRECTORY_SEPARATOR . '_'
         ));
+
         $this->loader = $loader;
         /** @noinspection PhpUndefinedFieldInspection */
         date_default_timezone_set($this->config->timezone);
     }
 
+    /**
+     * [setFactory description]
+     * @param    [type]                   $factory [description]
+     */
     public function setFactory($factory)
     {
         switch ($factory) {
@@ -58,13 +74,11 @@ class Application
                 break;
         }
 
+        $this->factory = $factory;
         $this->setConfig();
-        $this->initializeLogger();
+        $this->_initializeLogger();
     }
 
-    /**
-     * @param \Phalcon\DiInterface $di
-     */
     public function setConfig($di = null)
     {
         $this->di->setShared('config', $this->config);
@@ -127,11 +141,30 @@ class Application
     {
         if (!empty($dirs)) {
             $this->loader->registerDirs($dirs);
-            $this->loader->register();    
+            $this->loader->register();
         }
     }
 
-    private function initializeLogger()
+    public function run(array $params = [])
+    {
+        switch ($this->factory) {
+            case 'web':
+                $this->_runMvcApplication($params);
+                break;
+            case 'cli':
+                $this->_runCliConsole($params);
+                break;
+            default:
+                $this->_runMvcApplication($params);
+                break;
+        }
+    }
+
+    /**
+     * _initializeLogger
+     * @return   [type]                   [description]
+     */
+    private function _initializeLogger()
     {
         $config = $this->config;
         $this->di->set('log', function () use ($config) {
@@ -145,7 +178,12 @@ class Application
         });
     }
 
-    public function run()
+    /**
+     * run Phalcon Mvc Application
+     * @param    array                    $params [description]
+     * @return   [type]                           [description]
+     */
+    private function _runMvcApplication(array $params)
     {
         $application = new \Phalcon\Mvc\Application($this->di());
         echo $application->handle()->getContent();
@@ -162,6 +200,37 @@ class Application
                 $toolbar->addDataCollector(new Request());
                 echo $toolbar->render();
             }
+        }
+    }
+
+    /**
+     * run with phalcon cli console
+     * @param    array                    $params [description]
+     */
+    private function _runCliConsole(array $params)
+    {
+        $console = new \Phalcon\CLI\Console($this->di());
+        $this->di()->setShared('console', $console);
+
+        $arguments = [];
+        foreach ($params as $k => $arg) {
+            if ($k == 1) {
+                $arguments['task'] = $arg;
+            } elseif ($k == 2) {
+                $arguments['action'] = $arg;
+            } elseif ($k >= 3) {
+                $arguments['params'][] = $arg;
+            }
+        }
+
+        define('CURRENT_TASK', (isset($params[1]) ? $params[1] : null));
+        define('CURRENT_ACTION', (isset($params[2]) ? $params[2] : null));
+
+        try {
+            $console->handle($arguments);
+        } catch (\Phalcon\Exception $e) {
+            echo $e->getMessage();
+            exit(255);
         }
     }
 }

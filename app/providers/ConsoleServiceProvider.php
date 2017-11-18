@@ -34,27 +34,27 @@ class ConsoleServiceProvider extends ServiceProvider
                 $cronManager = new CronManager();
 
                 foreach ($crons as $cron) {
-                    switch ($cron['job']) {
+                    switch ($cron->job) {
                         case 'phalcon':
-                            $cmds = explode(' ', $cron['command']);
+                            $cmds = explode(' ', $cron->command);
                             list($task, $action) = $cmds;
                             $params = ' ' . implode(' ', array_slice($cmds, 2));
                             $command = [];
-                        	$command['task'] = $task;
-                        	$command['action'] = $action;
-                        	$command['params'] = $params;
+                            $command['task'] = $task;
+                            $command['action'] = $action;
+                            $command['params'] = $params;
                             break;
                         case 'system':
-                            $command = $cron['command'];
+                            $command = $cron->command;
                             break;
                         default:
-                            throw new \Exception("Do not have " . $cron['job'] . " handler");
+                            throw new \Exception("Do not have " . $cron->job . " handler");
                             break;
                     }
 
-                    $job = "\\Sid\\Phalcon\\Cron\\Job\\" . ucfirst($cron['job']);
+                    $job = "\\Sid\\Phalcon\\Cron\\Job\\" . ucfirst($cron->job);
 
-                    $cronManager->add(new $job($cron['expression'], $command));
+                    $cronManager->add(new $job($cron->expression, $command));
                 }
                 return $cronManager;
             }
@@ -63,6 +63,6 @@ class ConsoleServiceProvider extends ServiceProvider
 
     protected function getCrons()
     {
-        return require CONFIG_PATH . '/crons.php';
+        return $this->config->crons;
     }
 }
