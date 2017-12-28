@@ -19,8 +19,8 @@ $app = require ROOT.'/bootstrap/app.php';
 $app->setFactory('cli');
 
 $app->registerDirs([
-    ROOT.'/app/tasks',
-    ROOT.'/app/jobs',
+    ROOT.'/app/Tasks',
+    ROOT.'/app/Jobs',
 ]);
 
 $app->registerServiceProviders([
