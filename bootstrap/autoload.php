@@ -36,7 +36,7 @@ if (!defined('ROUTES_PATH')) {
 // Register some namespaces
 $loader = new \Phalcon\Loader();
 $loader->registerDirs([
-    APP_PATH,
+    APP_PATH
 ])->registerNamespaces([
     'App' => ROOT . '/app/',
 ]);
