@@ -17,7 +17,7 @@ class QueueTask extends Queue
 	public function sampleAction()
 	{
 		$text = '队列延迟';
-		$job = (new News($text))->delay(2);
+		$job = (new News($text))->delay(5);
 		dispatch($job);
 	}
 }

@@ -13,10 +13,8 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "phalavel/queues": "^1.0",
     "illuminate/events": "^5.2",
-    "fabfuel/prophiler": "^1.0",
-    "phalcon/incubator": "3.1.2",
+    "phalavel/queues": "dev-master",
     "sidroberts/phalcon-cron": "dev-master"
   },
   "autoload": {

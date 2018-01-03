@@ -42,20 +42,31 @@ class AppServiceProvider extends ServiceProvider
                 case 'memcached':
                     $cache = new BackMemCached(
                         new FrontData(["lifetime" => $config->lifetime]),
-                        ["servers" => $config->memcached->toArray()]
+                        [
+                            "servers" => $config->memcached->toArray(),
+                            "client" => [
+                                \Memcached::OPT_HASH => \Memcached::HASH_MD5,
+                                \Memcached::OPT_PREFIX_KEY => $config->prefix
+                            ]
+                        ]
                     );
                     break;
                 case 'file':
                     $cache = new BackFile(
                         new FrontOutput(["lifetime" => $config->lifetime]),
-                        ['cacheDir' => $config->file->dir]
+                        [
+                            'cacheDir' => $config->file->dir,
+                            'prefix' => $config->prefix
+                        ]
                     );
                     break;
                 case 'redis':
                     //使用redis
+                    $redis_config = $config->redis->toArray();
+                    $redis_config['prefix'] = $config->prefix;
                     $cache = new BackRedis(
                         new FrontData(["lifetime" => $config->lifetime]),
-                        $config->redis->toArray()
+                        $redis_config
                     );
                     break;
                 default:

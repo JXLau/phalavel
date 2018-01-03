@@ -13,6 +13,7 @@ return [
         'file'      => [
             'dir' => ROOT . '/storage/framework/cache/',
         ],
+        'prefix' => 'cache_prefix_',
         'memcached' => [
             [
                 'host'   => '127.0.0.1',
@@ -25,7 +26,7 @@ return [
             'port'       => 6379,
             // 'auth'       => 'foobared',
             'persistent' => false,
-        ],
+        ]
     ],
 
     'database' => [
