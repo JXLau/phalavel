@@ -118,10 +118,8 @@ class Application
             $config = array_merge($each_config, $config);
         }
 
-        $this->config = new Config(array_replace_recursive(
-            $config,
-            require ROOT . DIRECTORY_SEPARATOR . '_'
-        ));
+        $this->config = new Config($config);
+        
         $this->di->setShared('config', $this->config);
     }
 
