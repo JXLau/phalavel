@@ -23,6 +23,17 @@ class WebServiceProvider extends ServiceProvider
      */
     protected function register()
     {
+        $this->registerSession();
+        $this->registerView();
+    }
+
+    /**
+     * Register view
+     * 
+     * @return   void
+     */
+    protected function registerView()
+    {
         $this->di->set('view', function () {
             $view = new View();
             $view->setViewsDir(VIEW_PATH . '/');
@@ -43,6 +54,26 @@ class WebServiceProvider extends ServiceProvider
             ]);
 
             return $view;
+        }, true);
+    }
+
+    /**
+     * Register session
+     * 
+     * @return   void
+     */
+    protected function registerSession()
+    {
+        $config = config('session');
+
+        $this->di->set('session', function () use ($config) {
+
+            $sessionAapter = 'Phalcon\Session\Adapter\\'.$config->adapter;
+            $session = new $sessionAapter($config->toArray());
+
+            $session->start();
+
+            return $session;
         }, true);
     }
 }
